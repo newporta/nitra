@@ -136,16 +136,16 @@ module Nitra
         clean_up
       end
 
-    def connect_to_database
-      if defined?(Rails)
-        Nitra::RailsTooling.connect_to_database
-        debug("Connected to database #{ActiveRecord::Base.connection.current_database}")
+      def connect_to_database
+        if defined?(Rails)
+          Nitra::RailsTooling.connect_to_database
+          debug("Connected to database #{ActiveRecord::Base.connection.current_database}")
+        end
       end
-    end
 
-    def reset_cache
-      Nitra::RailsTooling.reset_cache if defined?(Rails)
-    end
+      def reset_cache
+        Nitra::RailsTooling.reset_cache if defined?(Rails)
+      end
 
       ##
       # Process the file, forking before hand.

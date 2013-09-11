@@ -1,6 +1,6 @@
 # Nitra
 Nitra is a multi-process, optionally multi-server rspec and cucumber runner that uses forking to reduce memory usage and IPC to distribute builds amongst available CPUs efficiently.
-
+
 ## Philosophy
 * Nitra attempts to do the simplest thing possible
 * Nitra (ab)uses unix primitives where possible
@@ -86,3 +86,4 @@ Our build is run via rake tasks so we end up with a bunch of generated code to r
 
 ## Copyright
 Copyright 2012-2013 Roger Nesbitt, Powershop Limited, YouDo Limited.  MIT licence.
+

@@ -71,6 +71,9 @@ class Nitra::Master
             if configuration.debug
               puts "STDOUT for #{data["process"]} #{data["filename"]}:\n#{data["text"]}" unless data["text"].empty?
             end
+
+          when "stderr"
+            puts "STDERR for #{data["process"]} #{data["filename"]}:\n#{data["text"]}" unless data["text"].empty?
           end
         else
           runners.delete channel

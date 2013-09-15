@@ -159,32 +159,30 @@ module Nitra
         debug "Starting to process #{filename}"
         start_time = Time.now
 
-        rd, wr = IO.pipe
+        stdout_pipe = IO.pipe
+        stderr_pipe = IO.pipe
         @forked_worker_pid = fork do
           trap('USR1') { exit! }  # at_exit hooks will be run in the parent.
-          $stdout.reopen(wr)
-          $stderr.reopen(wr)
-          rd.close
+          $stdout.reopen(stdout_pipe[1])
+          $stderr.reopen(stderr_pipe[1])
+
           $0 = filename
           run_file(filename)
-          wr.close
+
+          stdout_pipe.each(&:close)
+          stderr_pipe.each(&:close)
           exit!  # at_exit hooks will be run in the parent.
         end
-        wr.close
-        output = ""
-        loop do
-          IO.select([rd])
-          text = rd.read
-          break if text.nil? || text.length.zero?
-          output.concat text
-        end
-        rd.close
+        stdout_pipe[1].close
+        stderr_pipe[1].close
+        stdout_text = stdout_pipe[0].read
+        stderr_text = stderr_pipe[0].read
         Process.wait(@forked_worker_pid) if @forked_worker_pid
-
         @forked_worker_pid = nil
 
         end_time = Time.now
-        channel.write("command" => "stdout", "process" => "test framework", "filename" => filename, "text" => output, "worker_number" => worker_number) unless output.empty?
+        channel.write("command" => "stdout", "process" => "test framework", "filename" => filename, "text" => stdout_text, "worker_number" => worker_number) unless stdout_text.empty?
+        channel.write("command" => "stderr", "process" => "test framework", "filename" => filename, "text" => stderr_text, "worker_number" => worker_number) unless stderr_text.empty?
         debug "#{filename} processed in #{'%0.2f' % (end_time - start_time)}s"
       end
 

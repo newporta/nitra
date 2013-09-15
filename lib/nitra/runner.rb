@@ -91,7 +91,7 @@ class Nitra::Runner
         end
 
         case data['command']
-        when "debug", "stdout", "error"
+        when "debug", "stdout", "stderr", "error"
           server_channel.write(data)
 
         when "result"

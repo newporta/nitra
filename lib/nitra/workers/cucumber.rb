@@ -24,7 +24,7 @@ module Nitra::Workers
     end
 
     def cuke_runtime
-      @cuke_runtime ||= ::Cucumber::ResetableRuntime.new  # This runtime gets reused, this is important as it's the part that loads the steps...
+      @cuke_runtime ||= ::Cucumber::Runtime.new
     end
 
     ##
@@ -44,8 +44,8 @@ module Nitra::Workers
       else
         run_with_arguments("--no-color", "--require", "features", filename)
 
-        if cuke_runtime.results.failure? && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
-           cuke_runtime.results.scenarios(:failed).any? {|scenario| scenario.exception.to_s =~ @configuration.exceptions_to_retry}
+        if cuke_runtime.failure? && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
+           cuke_runtime.scenarios(:failed).any? {|scenario| scenario.exception.to_s =~ @configuration.exceptions_to_retry}
           raise RetryException
         end
 
@@ -63,7 +63,7 @@ module Nitra::Workers
         {
           "test_count"    => test_count,
           "failure_count" => failure_count,
-          "failure"       => cuke_runtime.results.failure?,
+          "failure"       => cuke_runtime.failure?,
         }
       end
     end
@@ -71,7 +71,7 @@ module Nitra::Workers
     def clean_up
       super
 
-      cuke_runtime.reset
+      @cuke_runtime = nil #just blow away the runtime :(
     end
 
     def run_with_arguments(*args)

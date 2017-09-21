@@ -16,6 +16,9 @@ Nitra is a multi-process, optionally multi-server rspec and cucumber runner that
           -c, --cpus NUMBER                  Specify the number of CPUs to use on the host, or if specified after a --slave, on the slave
               --cucumber [PATTERN1,PATTERN2] Full cucumber run, causes any files you list manually to be ignored.
                                              Default pattern is "features/**/*.feature".
+              --cucumber-format FORMATTER    Additional cucumber format to use. Nitra will always use the "pretty" format in addition to the format defined here.
+                                             Refer to the cucumber documentation for the '--format' flag for more information.
+              --cucumber-out FILE            Use with --cucumber-format FORMATTER to output that formatter to a file.
               --debug                        Print debug output
           -p, --print-failures               Print failures immediately when they occur
           -q, --quiet                        Quiet; don"t display progress bar

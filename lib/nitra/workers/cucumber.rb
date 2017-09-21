@@ -29,8 +29,17 @@ module Nitra::Workers
     # Run a Cucumber file.
     #
     def run_file(filename, preloading = false)
+      args = []
+
+      args << '--no-color'
+      args << '--require'
+      args << 'features'
+
       if configuration.split_files && !preloading && !filename.include?(':')
-        run_with_arguments("--no-color", "--require", "features", "--dry-run", filename)
+        args << '--dry-run'
+        args << filename
+
+        run_with_arguments(args)
 
         {
           "test_count"    => 0,
@@ -39,7 +48,21 @@ module Nitra::Workers
           "parts_to_run"  => runnable_parts,
         }
       else
-        run_with_arguments("--no-color", "--require", "features", filename)
+        if configuration.cucumber_formatter && !preloading
+          args << '--format'
+          args << 'pretty'
+          args << '--format'
+          args << configuration.cucumber_formatter
+
+          if configuration.cucumber_out
+            args << '--out'
+            args << unique_output_file_for(filename, configuration.cucumber_out)
+          end
+        end
+
+        args << filename
+
+        run_with_arguments(args)
 
         if cuke_runtime.failure? && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
            cuke_runtime.results.scenarios(:failed).any? {|scenario| scenario.exception.to_s =~ @configuration.exceptions_to_retry || scenario.exception.class.to_s =~ @configuration.exceptions_to_retry}
@@ -71,7 +94,7 @@ module Nitra::Workers
       cuke_runtime.reset
     end
 
-    def run_with_arguments(*args)
+    def run_with_arguments(args)
       cuke_config = ::Cucumber::Cli::Configuration.new(io, io)
       cuke_config.parse!(args)
       cuke_runtime.configure(cuke_config)

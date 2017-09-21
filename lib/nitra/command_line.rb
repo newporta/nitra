@@ -22,6 +22,14 @@ module Nitra
           configuration.rspec_out = filename
         end
 
+        opts.on("--cucumber-format FORMAT", String, "Additional cucumber format to use.") do |formatter_name|
+          configuration.cucumber_formatter = formatter_name
+        end
+
+        opts.on("--cucumber-out FILENAME", String, "Output file configuration for cucumber") do |filename|
+          configuration.cucumber_out = filename
+        end
+
         opts.on("-c", "--cpus NUMBER", Integer, "Specify the number of CPUs to use on the host, or if specified after a --slave, on the slave") do |n|
           configuration.set_process_count n
         end

@@ -25,6 +25,26 @@ describe Nitra::CommandLine do
       end
     end
 
+    describe "--cucumber-format" do
+      it "adds the cucumber formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:cucumber_formatter=, nil, ['thing'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--cucumber-format', 'thing'])
+        config.verify
+      end
+    end
+
+    describe "--cucumber-out" do
+      it "adds the cucumber formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:cucumber_out=, nil, ['file'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--cucumber-out', 'file'])
+        config.verify
+      end
+    end
+
     describe "--debug" do
       it "adds debug flag" do
         config.expect(:debug=, nil, [true])

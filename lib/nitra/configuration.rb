@@ -4,6 +4,7 @@ module Nitra
   class Configuration
     attr_accessor :debug, :quiet, :print_failures, :burndown_report, :rake_tasks, :split_files, :start_framework, :exceptions_to_retry, :max_attempts
     attr_accessor :process_count, :environment, :slaves, :slave_mode, :frameworks
+    attr_accessor :rspec_formatter, :rspec_out
 
     def initialize
       self.environment = "test"

@@ -124,6 +124,26 @@ describe Nitra::CommandLine do
       end
     end
 
+    describe "--rspec-format" do
+      it "adds the rspec formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:rspec_formatter=, nil, ['thing'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--rspec-format', 'thing'])
+        config.verify
+      end
+    end
+
+    describe "--rspec-out" do
+      it "adds the rspec formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:rspec_out=, nil, ['file'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--rspec-out', 'file'])
+        config.verify
+      end
+    end
+
     describe "--slave-mode" do
       it "turns on slave mode" do
         config.expect(:frameworks, {})

@@ -13,28 +13,30 @@ Nitra is a multi-process, optionally multi-server rspec and cucumber runner that
 
 ## Usage
       nitra [options] [spec_filename [...]]
-          -c, --cpus NUMBER                Specify the number of CPUs to use on the host, or if specified after a --slave, on the slave
-              --cucumber [PATTERN1,PATTERN2]
-                                           Full cucumber run, causes any files you list manually to be ignored.
-                                           Default pattern is "features/**/*.feature".
-              --debug                      Print debug output
-          -p, --print-failures             Print failures immediately when they occur
-          -q, --quiet                      Quiet; don't display progress bar
+          -c, --cpus NUMBER                  Specify the number of CPUs to use on the host, or if specified after a --slave, on the slave
+              --cucumber [PATTERN1,PATTERN2] Full cucumber run, causes any files you list manually to be ignored.
+                                             Default pattern is "features/**/*.feature".
+              --debug                        Print debug output
+          -p, --print-failures               Print failures immediately when they occur
+          -q, --quiet                        Quiet; don"t display progress bar
               --rake-after-runner task:1,task:2,task:3
-                                           The list of rake tasks to run, once per runner, in the runner's environment, just before the runner exits
+                                             The list of rake tasks to run, once per runner, in the runner's environment, just before the runner exits
               --rake-before-runner task:1,task:2,task:3
-                                           The list of rake tasks to run, once per runner, in the runner's environment, after the runner starts
+                                             The list of rake tasks to run, once per runner, in the runner's environment, after the runner starts
               --rake-before-worker task:1,task:2,task:3
-                                           The list of rake tasks to run, once per worker, in the worker's environment, before the worker starts
-              --reset                      r
-                                           Reset database, equivalent to --rake-before-worker db:reset
-              --slave-mode                 Run in slave mode; ignores all other command-line options
-              --slave CONNECTION_COMMAND   Provide a command that executes "nitra --slave-mode" on another host
-              --rspec [PATTERN1,PATTERN2]  Full rspec run, causes any files you list manually to be ignored.
-                                           Default pattern is "spec/**/*_spec.rb".
-              --slave-mode                 Run in slave mode; ignores all other command-line options
-          -e, --environment ENV            Set the RAILS_ENV to load
-          -h, --help                       Show this message
+                                             The list of rake tasks to run, once per worker, in the worker's environment, before the worker starts
+              --reset                        r
+                                             Reset database, equivalent to --rake-before-worker db:reset
+              --slave-mode                   Run in slave mode; ignores all other command-line options
+              --slave CONNECTION_COMMAND     Provide a command that executes "nitra --slave-mode" on another host
+              --rspec [PATTERN1,PATTERN2]    Full rspec run, causes any files you list manually to be ignored.
+                                             Default pattern is "spec/**/*_spec.rb".
+              --rspec-format FORMATTER       Additional rspec formatter to use. Nitra will always use the "pretty" formatter in addition to the formatter defined here.
+                                             Refer to the rspec documentation for the '--format' flag for more information.
+              --rspec-out FILE               Use with --rspec-format FORMATTER to output that formatter to a file.
+              --slave-mode                   Run in slave mode; ignores all other command-line options
+          -e, --environment ENV              Set the RAILS_ENV to load
+          -h, --help                         Show this message
 
 ### Getting started
 First things first add nitra to your Gemfile:

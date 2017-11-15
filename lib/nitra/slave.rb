@@ -1,3 +1,5 @@
+require 'socket'
+
 module Nitra::Slave
   class Client
     attr_reader :configuration, :slave_details_by_server

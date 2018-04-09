@@ -287,6 +287,24 @@ module Nitra
           channel.write("command" => "debug", "text" => text.join, "on" => on)
         end
       end
+
+      def unique_output_file_for(filename, template_output_file)
+        # use the output file passed to nitra as a template to create a unique
+        # filename so sequential calls to the worker don't overwrite previously created
+        # output file
+        extension = Pathname(template_output_file).extname
+
+        # the worker could support running a file with a line number
+        if filename.include?(':')
+          line_number = filename.partition(':').last
+          worker_file_without_extension = Pathname(filename.partition(':').first).sub_ext("_#{line_number}")
+        else
+          worker_file_without_extension = Pathname(filename).sub_ext('')
+        end
+
+        # append the name of the worker file without an extension before the output file's extension
+        Pathname(template_output_file).sub_ext("_#{worker_file_without_extension}#{extension}").to_s
+      end
     end
   end
 end

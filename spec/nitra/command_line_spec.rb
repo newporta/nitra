@@ -25,6 +25,26 @@ describe Nitra::CommandLine do
       end
     end
 
+    describe "--cucumber-format" do
+      it "adds the cucumber formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:cucumber_formatter=, nil, ['thing'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--cucumber-format', 'thing'])
+        config.verify
+      end
+    end
+
+    describe "--cucumber-out" do
+      it "adds the cucumber formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:cucumber_out=, nil, ['file'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--cucumber-out', 'file'])
+        config.verify
+      end
+    end
+
     describe "--debug" do
       it "adds debug flag" do
         config.expect(:debug=, nil, [true])
@@ -120,6 +140,26 @@ describe Nitra::CommandLine do
         config.expect(:add_framework, nil, ['rspec', ["spec/**/*_spec.rb"]])
         config.expect(:frameworks, {'rspec' => ["spec/**/*_spec.rb"]})
         Nitra::CommandLine.new(config, ['--rspec'])
+        config.verify
+      end
+    end
+
+    describe "--rspec-format" do
+      it "adds the rspec formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:rspec_formatter=, nil, ['thing'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--rspec-format', 'thing'])
+        config.verify
+      end
+    end
+
+    describe "--rspec-out" do
+      it "adds the rspec formatter flag" do
+        config.expect(:frameworks, {})
+        config.expect(:rspec_out=, nil, ['file'])
+        config.expect(:slave_mode, false)
+        Nitra::CommandLine.new(config, ['--rspec-out', 'file'])
         config.verify
       end
     end

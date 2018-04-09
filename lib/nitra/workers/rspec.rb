@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Nitra::Workers
   class Rspec < Worker
     def self.filename_match?(filename)
@@ -29,7 +31,7 @@ module Nitra::Workers
     # Run an rspec file.
     #
     def run_file(filename, preloading = false)
-      runner = runner_for(filename)
+      runner = runner_for(filename, preloading)
       failure = runner.run(io, io).to_i != 0
 
       if failure && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
@@ -51,8 +53,24 @@ module Nitra::Workers
       }
     end
 
-    def runner_for(filename)
-      args = ["-f", "p", filename]
+    def runner_for(filename, preloading)
+      args = []
+
+      if configuration.rspec_formatter && !preloading
+        args << '--format'
+        args << 'progress'
+        args << '--format'
+        args << configuration.rspec_formatter
+
+        if configuration.rspec_out
+          args << '--out'
+
+          args << unique_output_file_for(filename, configuration.rspec_out)
+        end
+      end
+
+      args << filename
+
       if RSpec::Core::const_defined?(:CommandLine) && RSpec::Core::Version::STRING < "2.99"
         RSpec::Core::CommandLine.new(args)
       else

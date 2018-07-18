@@ -1,6 +1,12 @@
 class Nitra::Master
   attr_reader :configuration, :files_by_framework
 
+  ABORTED           = :aborted
+  FAILURE           = :failure
+  SUCCESS           = :success
+  TEST_FAILURES     = :test_failures
+  UNPROCESSED_FILES = :unprocessed_files
+
   def initialize(configuration, files = nil)
     @configuration = configuration
     if configuration.frameworks.any?
@@ -43,7 +49,17 @@ class Nitra::Master
     formatter.finish
     burndown.finish configuration.burndown_report if configuration.burndown_report
 
-    !$aborted && progress.files_completed == progress.file_count && progress.failure_count.zero? && !progress.failure
+    if $aborted
+      ABORTED
+    elsif progress.files_completed != progress.file_count
+      UNPROCESSED_FILES
+    elsif progress.failure_count.positive?
+      TEST_FAILURES
+    elsif progress.failure
+      FAILURE
+    else
+      SUCCESS
+    end
   end
 
 protected

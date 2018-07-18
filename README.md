@@ -4,7 +4,7 @@ Nitra is a multi-process, optionally multi-server rspec and cucumber runner that
 ## Philosophy
 * Nitra attempts to do the simplest thing possible
 * Nitra (ab)uses unix primitives where possible
-* Nitra doesn't do thing that unix alnext_file does better (eg. rsync)
+* Nitra doesn't do things that unix already does better (eg. rsync)
 * IPC is accomplished via pipes and select
 * Forking is used heavily for several reasons
 * Running nitra locally should be easy

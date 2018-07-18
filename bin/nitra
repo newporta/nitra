@@ -8,5 +8,20 @@ Nitra::CommandLine.new(configuration, ARGV)
 if configuration.slave_mode
   Nitra::Slave::Server.new.run
 else
-  exit Nitra::Master.new(configuration, ARGV).run ? 0 : 1
+  result = Nitra::Master.new(configuration, ARGV).run
+
+  case result
+  when Nitra::Master::ABORTED
+    exit 1
+  when Nitra::Master::TEST_FAILURES
+    exit 2
+  when Nitra::Master::FAILURE
+    exit 3
+  when Nitra::Master::UNPROCESSED_FILES
+    exit 4
+  when Nitra::Master::SUCCESS
+    exit 0
+  else
+    exit 127
+  end
 end

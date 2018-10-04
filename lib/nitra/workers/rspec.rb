@@ -34,8 +34,7 @@ module Nitra::Workers
       runner = runner_for(filename, preloading)
       failure = runner.run(io, io).to_i != 0
 
-      if failure && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
-         io.string =~ @configuration.exceptions_to_retry
+      if failure && retry_run?(runner)
         raise RetryException
       end
 
@@ -94,5 +93,43 @@ module Nitra::Workers
       # reset the reporter so we don't end up with two when we reuse the Configuration
       RSpec.configuration.reset
     end
+
+    def retry_run?(runner)
+      return false unless retry_configured?
+      return false unless retry_attempts_remaining?
+
+      match_retry_exception? || match_retry_tag?(runner)
+    end
+
+    def match_retry_exception?
+      @configuration.exceptions_to_retry && io.string =~ @configuration.exceptions_to_retry
+    end
+
+    def match_retry_tag?(runner)
+      @configuration.tags_to_retry && (@configuration.tags_to_retry & runner_tags(runner)).any?
+    end
+
+    def runner_tags(runner)
+      (runner.world.all_examples.map(&:metadata).flat_map(&:keys) - STANDARD_METADATA_KEYS).map(&:to_s)
+    end
+
+    STANDARD_METADATA_KEYS = %i[
+      absolute_file_path
+      block
+      caller
+      described_class
+      description
+      description_args
+      example_group
+      execution_result
+      file_path
+      full_description
+      last_run_status
+      line_number
+      location
+      rerun_file_path
+      scoped_id
+      shared_group_inclusion_backtrace
+    ].freeze
   end
 end

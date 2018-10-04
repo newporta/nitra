@@ -64,8 +64,7 @@ module Nitra::Workers
 
         run_with_arguments(args)
 
-        if cuke_runtime.failure? && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
-           cuke_runtime.results.scenarios(:failed).any? {|scenario| scenario.exception.to_s =~ @configuration.exceptions_to_retry || scenario.exception.class.to_s =~ @configuration.exceptions_to_retry}
+        if cuke_runtime.failure? && retry_run?
           raise RetryException
         end
 
@@ -106,6 +105,31 @@ module Nitra::Workers
       outlines = example_rows.map(&:scenario_outline)
 
       (outlines + scenarios).map { |runnable| "#{runnable.location.file}:#{runnable.location.line}" }.uniq
+    end
+
+    def retry_run?
+      return false unless retry_configured?
+      return false unless retry_attempts_remaining?
+
+      result = cuke_runtime.results.scenarios(:failed).any? do |scenario|
+        match_retry_exception?(scenario) || match_retry_tag?(scenario)
+      end
+
+      result
+    end
+
+    def match_retry_exception?(scenario)
+      (@configuration.exceptions_to_retry && (scenario.exception.to_s =~ @configuration.exceptions_to_retry || scenario.exception.class.to_s =~ @configuration.exceptions_to_retry))
+    end
+
+    def match_retry_tag?(scenario)
+      @configuration.tags_to_retry && (@configuration.tags_to_retry & scenario_tags(scenario)).any?
+    end
+
+    def scenario_tags(scenario)
+      scenario.source_tags.map(&:name).uniq.map do |tag|
+        tag.sub(/^@/, '')
+      end
     end
   end
 end

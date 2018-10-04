@@ -305,6 +305,14 @@ module Nitra
         # append the name of the worker file without an extension before the output file's extension
         Pathname(template_output_file).sub_ext("_#{worker_file_without_extension}#{extension}").to_s
       end
+
+      def retry_configured?
+        @configuration.exceptions_to_retry || @configuration.tags_to_retry
+      end
+
+      def retry_attempts_remaining?
+        @attempt && @attempt < @configuration.max_attempts
+      end
     end
   end
 end

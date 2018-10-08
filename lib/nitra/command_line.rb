@@ -104,6 +104,10 @@ module Nitra
           end
         end
 
+        opts.on("--retry-tags tag1,tag2", Array, "Retry tests that fail if they are tagged with any of the configured tags.") do |tags|
+          configuration.tags_to_retry = Array(tags)
+        end
+
         opts.on("--attempts N", Integer, "Maximum number of times to try tests that fail with the --retry exceptions") do |max_attempts|
           configuration.max_attempts = max_attempts
         end

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+### Added
+- New option --retry-tags which allows retrying tests tagged with one of the configured tags.
+
 ## [1.0.3] - 2018-07-19
 ### Added
 - Add additional exit codes to differentiate nitras results. There only use to be two codes; '0' for success, '1' for failure. Now there are codes for: Aborted, Failure, Success, Test Failures, and Unprocessed Files

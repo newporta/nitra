@@ -317,6 +317,10 @@ module Nitra
       def retry_attempts_remaining?
         @attempt && @attempt < @configuration.max_attempts
       end
+
+      def already_split?(filename)
+        filename.include?(':')
+      end
     end
   end
 end

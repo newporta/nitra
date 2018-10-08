@@ -84,8 +84,24 @@ module Nitra
           configuration.add_slave connection_command
         end
 
-        opts.on("--split-files", "Split test files and run the scenarios in parallel") do
-          configuration.split_files = true
+        opts.on("--split-files", "Split cucumber files and run the scenarios in parallel (deprecated, use --split-cucumber-files)") do
+          configuration.split_cucumber_files = true
+        end
+
+        opts.on("--split-cucumber-files", "Split cucumber files and run the scenarios in parallel") do
+          configuration.split_cucumber_files = true
+        end
+
+        opts.on("--split-rspec-files", "Split rspec files and run the examples in parallel") do
+          configuration.split_rspec_files = true
+        end
+
+        opts.on("--split-rspec-files-regex PATTERN", "Regex to match against rspec filenames to determine whether they should be split. If not set, all specs will be split.") do |pattern|
+          if pattern[0] == '/' && pattern[-1] == '/'
+            configuration.split_rspec_files_regex = Regexp.new(pattern[1..-2])
+          else
+            configuration.split_rspec_files_regex = Regexp.new(Regexp.escape(pattern))
+          end
         end
 
         opts.on("--start-framework FRAMEWORK", String, "Start all workers with this framework first.  The default is to start a mixture of workers on each framework.") do |framework|

@@ -29,18 +29,32 @@ module Nitra::Workers
     # Run a Cucumber file.
     #
     def run_file(filename, preloading = false)
+      will_split_file = !preloading && splittable?(filename)
       args = []
 
       args << '--no-color'
       args << '--require'
       args << 'features'
 
-      if configuration.split_files && !preloading && !filename.include?(':')
+      if will_split_file
         args << '--dry-run'
-        args << filename
+      elsif configuration.cucumber_formatter && !preloading
+        args << '--format'
+        args << 'pretty'
+        args << '--format'
+        args << configuration.cucumber_formatter
 
-        run_with_arguments(args)
+        if configuration.cucumber_out
+          args << '--out'
+          args << unique_output_file_for(filename, configuration.cucumber_out)
+        end
+      end
 
+      args << filename
+
+      run_with_arguments(args)
+
+      if will_split_file
         cuke_runtime.failure? # must be called to trigger reporting
 
         {
@@ -50,25 +64,7 @@ module Nitra::Workers
           "parts_to_run"  => runnable_parts,
         }
       else
-        if configuration.cucumber_formatter && !preloading
-          args << '--format'
-          args << 'pretty'
-          args << '--format'
-          args << configuration.cucumber_formatter
-
-          if configuration.cucumber_out
-            args << '--out'
-            args << unique_output_file_for(filename, configuration.cucumber_out)
-          end
-        end
-
-        args << filename
-
-        run_with_arguments(args)
-
-        if cuke_runtime.failure? && retry_run?
-          raise RetryException
-        end
+        raise RetryException if cuke_runtime.failure? && retry_run?
 
         if m = io.string.match(/(\d+) scenarios?.+$/)
           test_count = m[1].to_i
@@ -124,6 +120,10 @@ module Nitra::Workers
       end
 
       result
+    end
+
+    def splittable?(filename)
+      configuration.split_cucumber_files && !already_split?(filename)
     end
 
     def match_retry_exception?(scenario)

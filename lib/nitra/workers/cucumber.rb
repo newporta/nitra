@@ -41,6 +41,8 @@ module Nitra::Workers
 
         run_with_arguments(args)
 
+        cuke_runtime.failure? # must be called to trigger reporting
+
         {
           "test_count"    => 0,
           "failure_count" => 0,
@@ -111,23 +113,49 @@ module Nitra::Workers
       return false unless retry_configured?
       return false unless retry_attempts_remaining?
 
-      result = cuke_runtime.results.scenarios(:failed).any? do |scenario|
-        match_retry_exception?(scenario) || match_retry_tag?(scenario)
+      if cuke_runtime.results.nil?
+        result = cuke_runtime.scenarios(:failed).any? do |scenario|
+          match_retry_exception?(scenario) || match_retry_tag?(scenario)
+        end
+      else
+        result = cuke_runtime.results&.scenarios(:failed)&.any? do |scenario|
+          match_retry_exception?(scenario) || match_retry_tag?(scenario)
+        end
       end
 
       result
     end
 
     def match_retry_exception?(scenario)
-      (@configuration.exceptions_to_retry && (scenario.exception.to_s =~ @configuration.exceptions_to_retry || scenario.exception.class.to_s =~ @configuration.exceptions_to_retry))
+      return false unless @configuration.exceptions_to_retry
+
+      exception =
+        if scenario.respond_to?(:exception)
+          scenario.exception
+        else
+          cuke_runtime.exception_for(scenario)
+        end
+
+      (exception.to_s =~ @configuration.exceptions_to_retry || exception.class.to_s =~ @configuration.exceptions_to_retry)
     end
 
     def match_retry_tag?(scenario)
-      @configuration.tags_to_retry && (@configuration.tags_to_retry & scenario_tags(scenario)).any?
+      return false unless @configuration.tags_to_retry
+
+      (@configuration.tags_to_retry & scenario_tags(scenario)).any?
     end
 
     def scenario_tags(scenario)
-      scenario.source_tags.map(&:name).uniq.map do |tag|
+      tags =
+        if scenario.respond_to?(:source_tags)
+          scenario.source_tags
+        elsif scenario.respond_to?(:tags)
+          scenario.tags
+        else
+          []
+        end
+
+      tags.map(&:name).uniq.map do |tag|
         tag.sub(/^@/, '')
       end
     end

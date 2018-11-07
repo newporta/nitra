@@ -1,16 +1,3 @@
-require 'active_record'
-
-ActiveRecord::ConnectionAdapters::ConnectionHandler.class_eval do
-private
-  def owner_to_pool
-    @owner_to_pool[0] # instead of [Process.pid], which would change every time we fork for a new file
-  end
-
-  def class_to_pool
-    @class_to_pool[0] # instead of [Process.pid], which would change every time we fork for a new file
-  end
-end
-
 module Nitra
   class RailsTooling
     ##

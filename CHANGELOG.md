@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [1.0.4] - 2018-11-07
 ### Added
 - New option --retry-tags which allows retrying tests tagged with one of the configured tags.
 - Initial support for Cucumber 3.x.

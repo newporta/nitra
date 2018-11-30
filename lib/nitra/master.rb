@@ -164,7 +164,7 @@ protected
         end
 
       when "retry"
-        say_lines(data["text"], "#{data["on"]} [RETRY-#{data["attempt"]} for #{data["filename"]}] ")
+        say_lines(data["text"], "#{data["on"]} [RETRY-#{data["retry_attempt"]} for #{data["filename"]}] ")
         burndown.retry(data["on"], data["framework"], data["filename"])
         say "#{data["on"]} Re-running #{data["filename"]}"
 

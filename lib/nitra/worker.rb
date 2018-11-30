@@ -225,15 +225,16 @@ module Nitra
         })
 
       rescue RetryException
+        retry_attempt = @attempt
         @attempt += 1
         channel.write({
-          "command"   => "retry",
-          "framework" => self.class.framework_name,
-          "filename"  => filename,
-          "on"        => on,
-          "failure"   => true,
-          "text"      => io.string,
-          "attempt"   => @attempt
+          "command"         => "retry",
+          "framework"       => self.class.framework_name,
+          "filename"        => filename,
+          "on"              => on,
+          "failure"         => true,
+          "text"            => io.string,
+          "retry_attempt"   => retry_attempt
         })
         clean_up
         retry

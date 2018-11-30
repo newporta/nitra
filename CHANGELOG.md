@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [1.0.6] - 2018-11-30
+### Added
+- Ouput failures from tests which have failed and are retried. Currently a test which fails only outputs the filename so it is difficult to see what the actual root cause of the test error is.
+
 ## [1.0.5] - 2018-11-08
 ### Added
 - Remove rails monkey patch initially added in `7a7e387`. This is causing breakage with tests using `fork` when using newer versions of mysql2. The connection sharing this monkey patch introduces causes connections to really be closed with newer versions of the gem. There seems to be no measurable performance difference without the monkey patch.

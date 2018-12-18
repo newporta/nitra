@@ -31,31 +31,42 @@ module Nitra::Workers
     # Run an rspec file.
     #
     def run_file(filename, preloading = false)
-      runner = runner_for(filename, preloading)
+      runner, will_split_file = runner_for(filename, preloading)
       failure = runner.run(io, io).to_i != 0
 
-      if failure && retry_run?(runner)
-        raise RetryException
-      end
-
-      if m = io.string.match(/(\d+) examples?, (\d+) failure/)
-        test_count = m[1].to_i
-        failure_count = m[2].to_i
+      if will_split_file
+        {
+          "test_count"    => 0,
+          "failure_count" => 0,
+          "failure"       => failure,
+          "parts_to_run"  => runnable_parts(runner),
+        }
       else
-        test_count = failure_count = 0
-      end
+        raise RetryException if failure && retry_run?(runner)
 
-      {
-        "failure"       => failure,
-        "test_count"    => test_count,
-        "failure_count" => failure_count,
-      }
+        if m = io.string.match(/(\d+) examples?, (\d+) failure/)
+          test_count = m[1].to_i
+          failure_count = m[2].to_i
+        else
+          test_count = failure_count = 0
+        end
+
+        {
+          "failure"       => failure,
+          "test_count"    => test_count,
+          "failure_count" => failure_count,
+        }
+      end
     end
 
     def runner_for(filename, preloading)
+      split_tests = !preloading && splittable?(filename)
+
       args = []
 
-      if configuration.rspec_formatter && !preloading
+      if split_tests
+        args << '--dry-run'
+      elsif configuration.rspec_formatter && !preloading
         args << '--format'
         args << 'progress'
         args << '--format'
@@ -70,13 +81,16 @@ module Nitra::Workers
 
       args << filename
 
-      if RSpec::Core::const_defined?(:CommandLine) && RSpec::Core::Version::STRING < "2.99"
-        RSpec::Core::CommandLine.new(args)
-      else
-        options = RSpec::Core::ConfigurationOptions.new(args)
-        options.parse_options if options.respond_to?(:parse_options) # only for 2.99
-        RSpec::Core::Runner.new(options)
-      end
+      result =
+        if RSpec::Core::const_defined?(:CommandLine) && RSpec::Core::Version::STRING < "2.99"
+          RSpec::Core::CommandLine.new(args)
+        else
+          options = RSpec::Core::ConfigurationOptions.new(args)
+          options.parse_options if options.respond_to?(:parse_options) # only for 2.99
+          RSpec::Core::Runner.new(options)
+        end
+
+      [result, split_tests]
     end
 
     def clean_up
@@ -94,11 +108,23 @@ module Nitra::Workers
       RSpec.configuration.reset
     end
 
+    def runnable_parts(runner)
+      runner.world.all_examples.map(&:metadata).map do |metadata|
+        "#{metadata[:rerun_file_path]}[#{metadata[:scoped_id]}]".sub(/^\.\//, '')
+      end
+    end
+
     def retry_run?(runner)
       return false unless retry_configured?
       return false unless retry_attempts_remaining?
 
       match_retry_exception? || match_retry_tag?(runner)
+    end
+
+    def splittable?(filename)
+      return false if !configuration.split_rspec_files || already_split?(filename)
+
+      @configuration.split_rspec_files_regex.nil? || filename =~ @configuration.split_rspec_files_regex
     end
 
     def match_retry_exception?

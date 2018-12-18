@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- New option --split-rspec-files which supports splitting rspec tests. The existing --split-files
+               has been renamed to --split-cucumber-files, with the former now deprecated.
+- New option --split-rspec-files-regex which can be used in conjunction with --split-rspec-files.
+               This will restrict which rspec files will be split. If not set, all rspec files will
+               be split.
 
 ## [1.0.6] - 2018-11-30
 ### Added

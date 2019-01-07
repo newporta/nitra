@@ -296,18 +296,23 @@ module Nitra
         # use the output file passed to nitra as a template to create a unique
         # filename so sequential calls to the worker don't overwrite previously created
         # output file
-        extension = Pathname(template_output_file).extname
-
-        # the worker could support running a file with a line number
-        if filename.include?(':')
-          line_number = filename.partition(':').last
-          worker_file_without_extension = Pathname(filename.partition(':').first).sub_ext("_#{line_number}")
-        else
-          worker_file_without_extension = Pathname(filename).sub_ext('')
-        end
 
         # append the name of the worker file without an extension before the output file's extension
-        Pathname(template_output_file).sub_ext("_#{worker_file_without_extension}#{extension}").to_s
+        base = filename_without_extension(filename)
+        extension = Pathname(template_output_file).extname
+        Pathname(template_output_file).sub_ext("_#{base}#{extension}").to_s
+      end
+
+      def filename_without_extension(filename)
+        # we could be running for a particular case (with bracketed location or linenumber)
+        # my_spec.rb
+        # my_spec.rb:1
+        # my_spec.rb[1]
+        # my_spec.rb[1:2]
+        # my_feature.feature:4
+        line_number = /\[?([\d:]+)\]?/.match(filename)&.[](1)&.gsub(':', '_')&.gsub(/^_/, '')
+
+        Pathname(filename).sub_ext(line_number.nil? ? '' : "_#{line_number}")
       end
 
       def retry_configured?
@@ -319,7 +324,7 @@ module Nitra
       end
 
       def already_split?(filename)
-        filename.include?(':')
+        filename.include?(':') || filename.include?('[')
       end
     end
   end

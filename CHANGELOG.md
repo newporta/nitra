@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.8] - 2019-01-08
+### Updated
+- Made output file generate more robust to remove `[` and `]` from filenames when
+  splitting rspec examples.
+
 ## [1.0.7] - 2018-12-19
 ### Added
 - New option --split-rspec-files which supports splitting rspec tests. The existing --split-files

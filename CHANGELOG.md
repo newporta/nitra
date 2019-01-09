@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.9] - 2019-01-09
+### Updated
+- Tighten up regex for replacing file locations in spec / cuke files. This should
+  only be replaced in the extension.
+
 ## [1.0.8] - 2019-01-08
 ### Updated
 - Made output file generate more robust to remove `[` and `]` from filenames when

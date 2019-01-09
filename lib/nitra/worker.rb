@@ -310,7 +310,7 @@ module Nitra
         # my_spec.rb[1]
         # my_spec.rb[1:2]
         # my_feature.feature:4
-        line_number = /\[?([\d:]+)\]?/.match(filename)&.[](1)&.gsub(':', '_')&.gsub(/^_/, '')
+        line_number = /\[?([\d:]+)\]?$/.match(filename)&.[](1)&.gsub(':', '_')&.gsub(/^_/, '')
 
         Pathname(filename).sub_ext(line_number.nil? ? '' : "_#{line_number}")
       end

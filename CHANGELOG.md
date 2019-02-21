@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.10] - 2019-02-22
+### Updated
+- Remove deprecated has\_rdoc usage in nitra.gemspec
+
 ## [1.0.9] - 2019-01-09
 ### Updated
 - Tighten up regex for replacing file locations in spec / cuke files. This should

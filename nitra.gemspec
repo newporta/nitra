@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'nitra'
-  s.version = '1.0.9'
+  s.version = '1.0.10'
   s.platform = Gem::Platform::RUBY
   s.license = "MIT"
   s.homepage = "http://github.com/fluxfederation/nitra"
@@ -21,6 +21,4 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-reporters'
-
-  s.has_rdoc = false
 end

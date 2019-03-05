@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.11] - 2019-03-06
+### Updated
+- Use the official rspec api for cleaning up the global configuration if it is
+  availabe in this version of rspec.
+
 ## [1.0.10] - 2019-02-22
 ### Updated
 - Remove deprecated has\_rdoc usage in nitra.gemspec

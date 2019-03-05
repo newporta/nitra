@@ -96,11 +96,20 @@ module Nitra::Workers
     def clean_up
       super
 
-      # Rspec.reset in 2.6 didn't destroy your rspec_rails fixture loading, we can't use it anymore for it's intended purpose.
-      # This means our world object will be slightly polluted by the preload_framework code, but that's a small price to pay
-      # to upgrade.
+      if RSpec::Core::Version::STRING < "3.2"
+        # Rspec.reset in 2.6 didn't destroy your rspec_rails fixture loading, we can't use it anymore for it's intended purpose.
+        # This means our world object will be slightly polluted by the preload_framework code, but that's a small price to pay
+        # to upgrade.
+        #
+        # RSpec.reset
+        #
+        RSpec.instance_variable_set(:@world, nil)
 
-      RSpec.clear_examples
+        # reset the reporter so we don't end up with two when we reuse the Configuration
+        RSpec.configuration.reset
+      else
+        RSpec.clear_examples
+      end
     end
 
     def runnable_parts(runner)

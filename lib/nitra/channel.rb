@@ -36,7 +36,8 @@ module Nitra
         data = rd.read(result[1].to_i)
         YAML.load(data)
       else
-        raise ProtocolInvalidError, "Expected nitra length line, got #{line.inspect}"
+        extra_lines = rd.read
+	raise ProtocolInvalidError, "Expected nitra length line, got #{line.inspect} #{extra_lines.inspect}"
       end
     end
 

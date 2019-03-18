@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.13] - 2019-03-18
+### Updated
+- Support rspec configs which have the expose DSL globally setting disabled
+
 ## [1.0.12] - 2019-03-15
 ### Updated
 - Include rest of received data when encountering an unexpected command in the

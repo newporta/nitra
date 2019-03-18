@@ -19,7 +19,7 @@ module Nitra::Workers
     def minimal_file
       <<-EOS
       require 'spec_helper'
-      describe('nitra preloading') do
+      RSpec.describe('nitra preloading') do
         it('preloads the fixtures') do
           expect(1).to eq(1)
         end

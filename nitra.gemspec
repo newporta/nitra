@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'nitra'
-  s.version = '1.0.12'
+  s.version = '1.0.13'
   s.platform = Gem::Platform::RUBY
   s.license = "MIT"
   s.homepage = "http://github.com/fluxfederation/nitra"
